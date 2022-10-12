@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-
+import ErrorModal from "../../UI/Button/ErrorModal";
 import Button from "../../UI/Button/Button";
 import styles from "./CourseInput.module.css";
 
@@ -33,6 +33,7 @@ import styles from "./CourseInput.module.css";
 const CourseInput = (props) => {
   const [enteredValue, setEnteredValue] = useState("");
   const [isValid, setIsValid] = useState(true);
+  const [error, setError] = useState();
 
   const goalInputChangeHandler = (event) => {
     if (event.target.value.trim().length > 0) {
@@ -44,21 +45,39 @@ const CourseInput = (props) => {
   const formSubmitHandler = (event) => {
     event.preventDefault();
     if (enteredValue.trim().length === 0) {
-      alert("Enter a goal!");
+      setError({
+        title: "Invalid input",
+        message: "Please enter a goal.",
+      });
       setIsValid(false);
       return;
     }
     props.onAddGoal(enteredValue);
   };
 
+  const errorHandler = () => {
+    setError(null);
+  };
+
   return (
-    <form onSubmit={formSubmitHandler}>
-      <div className={`${styles['form-control']} ${!isValid && styles.invalid}`}>
-        <label>Course Goal</label>
-        <input type="text" onChange={goalInputChangeHandler} />
-      </div>
-      <Button type="submit">Add Goal</Button>
-    </form>
+    <div>
+      {error && (
+        <ErrorModal
+          title={error.title}
+          message={error.message}
+          onConfirm={errorHandler}
+        />
+      )}
+      <form onSubmit={formSubmitHandler}>
+        <div
+          className={`${styles["form-control"]} ${!isValid && styles.invalid}`}
+        >
+          <label>Personal Goals</label>
+          <input type="text" onChange={goalInputChangeHandler} />
+        </div>
+        <Button type="submit">Add Goal</Button>
+      </form>
+    </div>
   );
 };
 
